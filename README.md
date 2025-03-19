@@ -64,4 +64,4 @@ Supported ROS Versions: `ROS1 Noetic` `ROS2 Humble`
     `rosdep install --from-paths src -y --ignore-src`
 
 ## Running a Basic Example Project
-You should now have a Docker environment for developing and testing your vehicle. To run an example project see the example_project repository.
+You should now have a Docker environment for developing and testing your vehicle. To run an example project see the [example_project repository](https://github.com/swri-robotics/sem-apc-example-project).
