@@ -49,7 +49,11 @@ RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
 
 RUN mkdir -p /home/$UNAME/shell_ws/src
 
-# TODO: Copy/git clone carla_shell_bridge and carla_ros_bridge
+# Git clone carla_shell_bridge, carla_ros_bridge, and example_project repos
+RUN cd /home/$UNAME/shell_ws/src
+RUN git clone -b main --single-branch https://github.com/swri-robotics/sem-apc-ros-bridge
+RUN git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-carla-interface.git
+RUN git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-example-project.git
 
 # Reset ROS entrypoint
 ENTRYPOINT []
