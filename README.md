@@ -1,40 +1,28 @@
-# Student Docker Environment
+# Shell APC Docker Environment
 
-A Docker development environment for students to run CARLA and ROS.
+This is the Docker development environment for the Shell Eco-marathon APC. Designed to automate the setup process for CARLA and ROS, this package will download and set up CARLA, ROS1 or ROS2, and all other code needed to develop and test code for the Shell Eco-marathon APC.
 
 CARLA Version: `0.9.15`
 
-ROS Version: `Humble`
+Supported ROS Versions: `ROS1 Noetic` `ROS2 Humble`
 
 ## First Time Container Setup
 1. Install Docker: <https://docs.docker.com/engine/install/debian>
-2. Download/clone this repository:
     
-    *(Currently the docker environment is not set up to download the other repos needed to interface with CARLA: the carla-ros-bridge, the carla-shell-interface, and the student example project. You will need to download them seperately and put them into your ROS workspace.)*
+    If your computer has a Nvidia GPU, you will also want to install the [Nvidia Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+    
+    - After installing the Nvidia container toolkit, you will need to restart the Docker daemon:
 
-3. Navigate to the directory in the repository containing the `docker-compose.yaml` file and modify this line in the file to mount your ROS src directory:
+        `sudo systemctl restart docker`
 
-    ``` yaml
-    - <SRC>:/home/shell_ws/src # Replace "<SRC>" with the full path to your ROS src directory
-    ```
+2. Add your user to the docker group so that you do not need to run all commands with sudo privileges. To make this modification, run the following command and log out and back into your computer:
 
-4. Set up environment variables by running:
+    `sudo usermod -aG docker $USER`
 
-    ``export GID=`id -g` ``
-
-    ``export UID=`id -u` ``
-
-5. Build and start up the Docker environment in the background with:
-
-    `docker compose --profile gpu up --build -d`
-
-    If your machine does not have a dedicated Nvidia graphics card, use the `nogpu` profile:
-
-    `docker compose --profile nogpu up --build -d`
-
-    After the build is complete, you should now see the CARLA server window open.
-
-6. You can also now see the two Docker containers you've created with the following:
+3. Download/clone this repository.
+4. Navigate to the cloned repository directory and run the `run.sh` bash script. This will take you through the setup process for configuring your Docker environment. 
+5. After answering the prompts and waiting for the script to build the containers, you should now see the CARLA server window open.
+6. You can also now see the two Docker containers you've created by running the following Docker command:
 
     `docker ps -a`
 
@@ -44,9 +32,7 @@ ROS Version: `Humble`
     a2a46daa1484   humble-docker-ros_environment      "/ros_entrypoint.sh …"   2 minutes ago    Up 20 seconds              ros_environment
     ```
 
-    *NOTE: If you are using the no_gpu version, your carla_server image and container name will look different since it builds a custom Docker image.*
-
-    The first container `carla_server` (or `carla_server_nogpu` if you built that version) hosts the simulated environment that your vehicle will be driving in. The second container `ros_environment` is a ROS development environment where you will build and run your control algorithms to control the vehicle.
+    The first container `carla_server` hosts the simulated environment that your vehicle will be driving in. The second container `ros_environment` is a ROS development environment where you will build and run your control algorithms to control the vehicle.
 
 7. To stop both containers, run:
 
@@ -63,67 +49,19 @@ ROS Version: `Humble`
     *NOTE: Closing the CARLA server window will stop the server and container. You will need to start the server container again using `docker start carla_server`*
 
 ## First Time ROS Environment Setup
-1. To enter in your ROS environment container, run:
+1. To enter into your ROS workspace in your ros_environment container, run:
 
     `docker exec -it ros_environment /bin/bash`
 
     `cd shell_ws`
 
-2. Update the system:
+2. Update and install ROS dependencies:
 
     `sudo apt update`
-
-    `sudo apt upgrade -y`
-
-3. Update and install ROS dependencies:
 
     `rosdep update`
 
     `rosdep install --from-paths src -y --ignore-src`
 
-## Developing in the Environtment
-After completing the first time Docker and ROS environment setup, you should now be able to develop, build, and run your code to control the vehicle in simulation as you would in a normal ROS environment. Let's run an example that moves the vehicle forward to show you how to build and run your code to control the vehicle. 
-
-1. If your containers are not running, start them and enter the ROS environment container:
-
-    `docker start carla_server ros_environment`
-
-    `docker exec -it ros_environment /bin/bash`
-
-    `cd shell_ws`
-
-2. Build the ROS packages:
-
-    `colcon build`
-
-3. Source your workspace:
-
-    `source install/setup.bash`
-
-4. Set up the CARLA simulated environment:
-
-    There are a variety of parameters to set up the server and simulated environment in the `carla_config.yaml` file within the `carla-interface` package: `~/shell_ws/src/carla-interface/config/carla_config.yaml` 
-
-    This includes things like selected a map, loading/unloading map layers, setting a spawn point, and generating traffic.
-
-5. Launch the carla_shell_bridge interface to setup the server world and spawn a vehicle to control:
-
-    `ros2 launch carla_shell_bridge main.launch.py`
-
-6. Finally, open a new terminal, enter the ROS container as shown in step 1 and source your workspace as shown in step 3. You can now run the example node that moves the vehicle forward!
-
-    `ros2 run test_control example_control`
-
-## General Tips
-
-If you've already built most of the ROS packages before and only need to rebuild a specific package that you have been modifying, you can use:
-
-`colcon build --packages-select <YOUR_PACKAGE_NAME>`
-
-Since your workspace is mounted to the ROS environment Docker container, you can simply edit your code locally on your machine with your favorite text editor, and all the changes will be synced to the Docker container automatically.
-
-If you encounter a spawning error with the Ego vehicle (`Exception caught: Spawn failed because of collision at spawn position` ) you may need to change the spawn point parameter in the `carla_config.yaml` file. The Z coordinate may need to be set to something greater than 0. You can also change this parameter to `"None"` which will spawn the vehicle in a random, valid position on the map.
-
-## Known Bugs
-
-- Traffic generation does not work in `Town03_Opt`. Please use a differnt map for traffic generation. 
+## Running a Basic Example Project
+You should now have a Docker environment for developing and testing your vehicle. To run an example project see the example_project repository.

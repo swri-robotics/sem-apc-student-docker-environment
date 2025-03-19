@@ -3,16 +3,17 @@
 
 services:
 
-  ##### ROS environment #####
-  ros_environment:
+  ##### ROS2 Humble environment #####
+  ros2_environment:
     container_name: ros_environment
+    profiles: [ros2]
     build:
       args:
         GID: $GID
         UID: $UID
         UNAME: $USER
       context: .
-      dockerfile: ros.dockerfile
+      dockerfile: ros2.dockerfile
     network_mode: host
     privileged: true
     environment:
@@ -22,11 +23,34 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ~/.Xauthority:/home/$USER/.Xauthority:rw
-      - /home/fcannard/Projects/shell-APC/CARLA/ros2_ws/src:/home/$USER/shell_ws/src # Replace "<SRC>" with the full path to your ROS src directory
+      - $ROS_WS:/home/$USER/shell_ws # Replace "$ROS_WS" with the full path to your ROS src directory
+
+  ##### ROS1 Noetic environment #####
+  ros1_environment:
+    container_name: ros_environment
+    profiles: [ros1]
+    build:
+      args:
+        GID: $GID
+        UID: $UID
+        UNAME: $USER
+      context: .
+      dockerfile: ros1.dockerfile
+    network_mode: host
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1 # Fix a bug with QT
+      - SDL_VIDEODRIVER=x11
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ~/.Xauthority:/home/$USER/.Xauthority:rw
+      - $ROS_WS:/home/$USER/shell_ws # Replace "$ROS_WS" with the full path to your ROS src directory
 
   ##### CARLA server using GPU #####
   carla_server:
     container_name: carla_server
+    profiles: [gpu]
     image: carlasim/carla:0.9.15
     # runtime: nvidia
     deploy:
@@ -57,7 +81,7 @@ services:
 
   ##### CARLA server using no GPU #####
   carla_server_nogpu:
-    container_name: carla_server_nogpu
+    container_name: carla_server
     profiles: [nogpu]
     # Running without a dedicated graphics card takes a few extra steps, 
     # so we need to build our own CARLA server docker image 

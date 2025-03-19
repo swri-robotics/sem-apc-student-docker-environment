@@ -11,45 +11,46 @@ LABEL description="Docker image used to install and run CARLA server that is com
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-    apt-utils \
-    bash-completion \
-    build-essential \
-    ca-certificates \
-    curl \
-    dirmngr \
-    gcc \
-    gnupg2 \
-    git \
-    git-lfs \
-    gpg-agent \
-    libccd-dev \
-    libccd2 \
-    libyaml-cpp-dev \
-    libgl1-mesa-glx \
-    mesa-utils \
-    iputils-ping \
-    locales \
-    lsb-release \
-    openssh-client \
-    pip \
-    python3-dev \
-    python3-pybind11 \
-    python3-pip \
-    software-properties-common \
-    sudo \
-    vim \
-    nano \
-    wget \
-    clang-format \
-    xdg-user-dirs \
-    xdg-utils \
-    libcanberra-gtk-module \
-    libcanberra-gtk3-module \
-    libxext6 \
-    libvulkan1 \
-    libvulkan-dev \
-    vulkan-tools \
-    mesa-vulkan-drivers
+        apt-utils \
+        bash-completion \
+        build-essential \
+        ca-certificates \
+        clang-format \
+        curl \
+        dirmngr \
+        gcc \
+        gnupg2 \
+        git \
+        git-lfs \
+        gpg-agent \
+        iputils-ping \
+        libcanberra-gtk-module \
+        libcanberra-gtk3-module \
+        libccd-dev \
+        libccd2 \
+        libgl1-mesa-glx \
+        libyaml-cpp-dev \
+        libvulkan1 \
+        libvulkan-dev \
+        libxext6 \
+        locales \
+        lsb-release \
+        mesa-utils \
+        mesa-vulkan-drivers \
+        nano \
+        openssh-client \
+        pip \
+        python3-dev \
+        python3-pybind11 \
+        python3-pip \
+        software-properties-common \
+        sudo \
+        vim \
+        vulkan-tools \
+        wget \
+        xdg-user-dirs \
+        xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
 
 # These arguments set up the name, group ID, and user ID of the user inside the container
 ARG UNAME=carla
