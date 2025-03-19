@@ -59,7 +59,7 @@ choose_gpu() {
 create_docker() {
   echo "Cloning source code into ROS workspace directory..."
   mkdir $1"src"
-  git clone -b main --single-branch https://github.com/swri-robotics/sem-apc-ros-bridge $1"src/sem-apc-ros-bridge"
+  git clone -b main --single-branch --recurse-submodules https://github.com/swri-robotics/sem-apc-ros-bridge $1"src/sem-apc-ros-bridge"
   if [ $3 == 1 ]; then
     git clone -b ros1 --single-branch https://github.com/swri-robotics/sem-apc-carla-interface.git $1"src/sem-apc-carla-interface"
     git clone -b ros1 --single-branch https://github.com/swri-robotics/sem-apc-example-project.git $1"src/sem-apc-example-project"
