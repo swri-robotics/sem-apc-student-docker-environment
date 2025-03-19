@@ -1,0 +1,82 @@
+# To run this docker compose file use: docker compose --profile <option> up
+# Replace <option> with "gpu" or "nogpu" depending on your computer hardware
+
+services:
+
+  ##### ROS environment #####
+  ros_environment:
+    container_name: ros_environment
+    build:
+      args:
+        GID: $GID
+        UID: $UID
+        UNAME: $USER
+      context: .
+      dockerfile: ros.dockerfile
+    network_mode: host
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1 # Fix a bug with QT
+      - SDL_VIDEODRIVER=x11
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ~/.Xauthority:/home/$USER/.Xauthority:rw
+      - /home/fcannard/Projects/shell-APC/CARLA/ros2_ws/src:/home/$USER/shell_ws/src # Replace "<SRC>" with the full path to your ROS src directory
+
+  ##### CARLA server using GPU #####
+  carla_server:
+    container_name: carla_server
+    image: carlasim/carla:0.9.15
+    # runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all # alternatively, use `count: all` for all GPUs
+              capabilities: [gpu]
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - QT_X11_NO_MITSHM=1 # Fix a bug with QT
+      - SDL_VIDEODRIVER=x11
+    user: ${UID}
+    volumes:
+      - ~/.Xauthority:/root/.Xauthority:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /etc/sudoers:/etc/sudoers:ro
+      - /etc/sudoers.d:/etc/sudoers.d:ro
+    privileged: true
+    network_mode: host
+    command: /bin/bash CarlaUE4.sh
+
+  ##### CARLA server using no GPU #####
+  carla_server_nogpu:
+    container_name: carla_server_nogpu
+    profiles: [nogpu]
+    # Running without a dedicated graphics card takes a few extra steps, 
+    # so we need to build our own CARLA server docker image 
+    build:
+      args:
+        GID: $GID
+        UID: $UID
+        UNAME: $USER
+      context: .
+      dockerfile: server.dockerfile
+    privileged: true
+    network_mode: host
+    environment:
+      - DISPLAY=${DISPLAY}
+    devices:
+      - /dev/dri
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ~/.Xauthority:/home/$USER/.Xauthority:rw
+      - /dev/dri:/dev/dri
+    command: /bin/bash CarlaUE4.sh -quality-level=Low
+    
