@@ -24,6 +24,11 @@ Supported ROS Versions: `ROS1 Noetic` `ROS2 Humble`
     `git clone https://github.com/swri-robotics/sem-apc-student-docker-environment.git`
 
 4. Navigate to the cloned repository directory and run the `run.sh` bash script. This will take you through the setup process for configuring your Docker environment. 
+
+    `cd sem-apc-student-docker-environment`
+    
+    `./run.sh`
+
 5. After answering the prompts and waiting for the script to build the containers, you should now see the CARLA server window open.
 6. You can also now see the two Docker containers you've created by running the following Docker command:
 
