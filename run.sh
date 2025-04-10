@@ -58,28 +58,30 @@ choose_gpu() {
 
 create_docker() {
   echo "Cloning source code into ROS workspace directory..."
-  mkdir $1"src"
-  git clone -b main --single-branch --recurse-submodules https://github.com/swri-robotics/sem-apc-ros-bridge $1"src/sem-apc-ros-bridge"
+  mkdir -p "$1/src"
+  git clone -b main --single-branch --recurse-submodules https://github.com/swri-robotics/sem-apc-ros-bridge "$1/src/sem-apc-ros-bridge"
+  
   if [ $3 == 1 ]; then
-    git clone -b ros1 --single-branch https://github.com/swri-robotics/sem-apc-carla-interface.git $1"src/sem-apc-carla-interface"
-    git clone -b ros1 --single-branch https://github.com/swri-robotics/sem-apc-example-project.git $1"src/sem-apc-example-project"
+    git clone -b ros1 --single-branch https://github.com/swri-robotics/sem-apc-carla-interface.git "$1/src/sem-apc-carla-interface"
+    git clone -b ros1 --single-branch https://github.com/swri-robotics/sem-apc-example-project.git "$1/src/sem-apc-example-project"
   else
-    git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-carla-interface.git $1"src/sem-apc-carla-interface"
-    git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-example-project.git $1"src/sem-apc-example-project"
+    git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-carla-interface.git "$1/src/sem-apc-carla-interface"
+    git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-example-project.git "$1/src/sem-apc-example-project"
   fi
 
   echo "Docker build has started. This may take some time..."
-  export GID=`id -g`
-  export UID=`id -u`
-  export ROS_WS=$1
-  if [ $2 == "true" ]; then
-    if [ $3 == 1 ]; then
+  export GID=$(id -g)
+  export UID=$(id -u)
+  export ROS_WS="$1"
+
+  if [ "$2" == "true" ]; then
+    if [ "$3" == 1 ]; then
       docker compose --profile gpu --profile ros1 up --build -d
     else
       docker compose --profile gpu --profile ros2 up --build -d
     fi
   else
-    if [ $3 == 1 ]; then
+    if [ "$3" == 1 ]; then
       docker compose --profile nogpu --profile ros1 up --build -d
     else
       docker compose --profile nogpu --profile ros2 up --build -d
