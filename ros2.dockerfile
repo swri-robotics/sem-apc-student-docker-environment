@@ -23,7 +23,7 @@ RUN apt-get update \
 # Install CARLA dependencies and CARLA client library
 RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install numpy pygame && \
-    python3 -m pip install 'carla==0.9.15'
+    python3 -m pip install 'carla==0.9.16'
 
 # These arguments set up the name, group ID, and user ID of the user inside the container
 ARG UNAME=carla

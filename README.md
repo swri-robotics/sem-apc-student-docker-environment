@@ -1,10 +1,10 @@
 # Shell APC Docker Environment
 
-This is the Docker development environment for the Shell Eco-marathon APC. Designed to automate the setup process for CARLA and ROS, this package will download and set up CARLA, ROS1 or ROS2, and all other code needed to develop and test code for the Shell Eco-marathon APC.
+This is the Docker development environment for the Shell Eco-marathon APC. Designed to automate the setup process for CARLA and ROS, this package will download and set up CARLA, ROS2, and all other code needed to develop and test code for the Shell Eco-marathon APC.
 
-CARLA Version: `0.9.15`
+CARLA Version: `0.9.16`
 
-Supported ROS Versions: `ROS1 Noetic` `ROS2 Humble`
+Supported ROS Version: `ROS2 Humble`
 
 ## First Time Container Setup
 1. Install Docker: <https://docs.docker.com/engine/install/debian>
@@ -30,13 +30,14 @@ Supported ROS Versions: `ROS1 Noetic` `ROS2 Humble`
     `./run.sh`
 
 5. After answering the prompts and waiting for the script to build the containers, you should now see the CARLA server window open.
+
 6. You can also now see the two Docker containers you've created by running the following Docker command:
 
     `docker ps -a`
 
     ```
     CONTAINER ID   IMAGE                              COMMAND                  CREATED          STATUS           PORTS     NAMES
-    60abd086c576   carlasim/carla:0.9.15              "/bin/bash CarlaUE4.…"   20 seconds ago   Up 20 seconds              carla_server
+    60abd086c576   carlasim/carla:0.9.16              "/bin/bash CarlaUE4.…"   20 seconds ago   Up 20 seconds              carla_server
     a2a46daa1484   humble-docker-ros_environment      "/ros_entrypoint.sh …"   2 minutes ago    Up 20 seconds              ros_environment
     ```
 
@@ -72,4 +73,4 @@ Supported ROS Versions: `ROS1 Noetic` `ROS2 Humble`
     `rosdep install --from-paths src -y --ignore-src`
 
 ## Running a Basic Example Project
-You should now have a Docker environment for developing and testing your vehicle. To run an example project see the [example_project repository](https://github.com/swri-robotics/sem-apc-example-project).
+You should now have a Docker environment for developing and testing your vehicle. To run an example project see the [example project repository](https://github.com/swri-robotics/sem-apc-example-project).

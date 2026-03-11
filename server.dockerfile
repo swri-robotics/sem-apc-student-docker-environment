@@ -70,13 +70,13 @@ USER $UNAME
 WORKDIR /home/$UNAME
 
 # Download CARLA Server
-RUN wget -q -O carla_0.9.15 https://tiny.carla.org/carla-0-9-15-linux
-RUN tar -xvzf carla_0.9.15
+RUN wget -q -O carla_0.9.16 https://tiny.carla.org/carla-0-9-16-linux
+RUN tar -xvzf carla_0.9.16
 
 # Install CARLA dependencies and CARLA client library
 RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install numpy pygame && \
-    python3 -m pip install 'carla==0.9.15'
+    python3 -m pip install 'carla==0.9.16'
 
 # Run CARLA server on low presets
-CMD ./CarlaUE4.sh -quality-level=Low
+CMD ./CarlaUE4.sh -quality-level=Low --ros2

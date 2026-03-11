@@ -31,18 +31,6 @@ create_ros_ws() {
   echo $ros_ws_path
 }
 
-choose_ros_version() {
-  read -p "Which version of ROS would you like to use? Enter '1' to select ROS1 Noetic or '2' to select ROS2 Humble (recommended): " -e ros_version_response
-  if [ $ros_version_response == 1 ] || [ $ros_version_response == 2 ]; then
-    >&2 echo "Setting up environment for ROS$ros_version_response."
-  else
-    >&2 echo "Invalid response."
-    exit 1
-  fi
-
-  echo $ros_version_response
-}
-
 choose_gpu() {
   >&2 echo "Checking if Nvidia support is enabled for Docker..."
   gpu="false"
@@ -60,14 +48,8 @@ create_docker() {
   echo "Cloning source code into ROS workspace directory..."
   mkdir -p "$1/src"
   git clone -b main --single-branch --recurse-submodules https://github.com/swri-robotics/sem-apc-ros-bridge "$1/src/sem-apc-ros-bridge"
-  
-  if [ $3 == 1 ]; then
-    git clone -b ros1 --single-branch https://github.com/swri-robotics/sem-apc-carla-interface.git "$1/src/sem-apc-carla-interface"
-    git clone -b ros1 --single-branch https://github.com/swri-robotics/sem-apc-example-project.git "$1/src/sem-apc-example-project"
-  else
-    git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-carla-interface.git "$1/src/sem-apc-carla-interface"
-    git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-example-project.git "$1/src/sem-apc-example-project"
-  fi
+  git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-carla-interface.git "$1/src/sem-apc-carla-interface"
+  git clone -b ros2 --single-branch https://github.com/swri-robotics/sem-apc-example-project.git "$1/src/sem-apc-example-project"
 
   echo "Docker build has started. This may take some time..."
   export GID=$(id -g)
@@ -75,17 +57,9 @@ create_docker() {
   export ROS_WS="$1"
 
   if [ "$2" == "true" ]; then
-    if [ "$3" == 1 ]; then
-      docker compose --profile gpu --profile ros1 up --build -d
-    else
-      docker compose --profile gpu --profile ros2 up --build -d
-    fi
+    docker compose --profile gpu --profile ros2 up --build -d
   else
-    if [ "$3" == 1 ]; then
-      docker compose --profile nogpu --profile ros1 up --build -d
-    else
-      docker compose --profile nogpu --profile ros2 up --build -d
-    fi
+    docker compose --profile nogpu --profile ros2 up --build -d
   fi
 }
 
@@ -97,9 +71,4 @@ if [ $? == 1 ]; then
   echo "Exiting script."
   exit 1
 fi
-selected_ros_version=$(choose_ros_version)
-if [ $? == 1 ]; then
-  echo "Exiting script."
-  exit 1
-fi
-create_docker $ros_ws_path $gpu $selected_ros_version
+create_docker $ros_ws_path $gpu

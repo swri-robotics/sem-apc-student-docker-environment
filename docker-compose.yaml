@@ -14,44 +14,24 @@ services:
         UNAME: $USER
       context: .
       dockerfile: ros2.dockerfile
-    network_mode: host
     privileged: true
+    network_mode: host
     environment:
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1 # Fix a bug with QT
       - SDL_VIDEODRIVER=x11
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/config/fastrtps-profile.xml
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ~/.Xauthority:/home/$USER/.Xauthority:rw
       - $ROS_WS:/home/$USER/shell_ws # Replace "$ROS_WS" with the full path to your ROS src directory
-
-  ##### ROS1 Noetic environment #####
-  ros1_environment:
-    container_name: ros_environment
-    profiles: [ros1]
-    build:
-      args:
-        GID: $GID
-        UID: $UID
-        UNAME: $USER
-      context: .
-      dockerfile: ros1.dockerfile
-    network_mode: host
-    privileged: true
-    environment:
-      - DISPLAY=${DISPLAY}
-      - QT_X11_NO_MITSHM=1 # Fix a bug with QT
-      - SDL_VIDEODRIVER=x11
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ~/.Xauthority:/home/$USER/.Xauthority:rw
-      - $ROS_WS:/home/$USER/shell_ws # Replace "$ROS_WS" with the full path to your ROS src directory
+      - ./config:/config:ro
 
   ##### CARLA server using GPU #####
   carla_server:
     container_name: carla_server
     profiles: [gpu]
-    image: carlasim/carla:0.9.15
+    image: carlasim/carla:0.9.16
     # runtime: nvidia
     deploy:
       resources:
@@ -77,7 +57,7 @@ services:
       - /etc/sudoers.d:/etc/sudoers.d:ro
     privileged: true
     network_mode: host
-    command: /bin/bash CarlaUE4.sh
+    command: /bin/bash CarlaUE4.sh -prefernvidia --ros2
 
   ##### CARLA server using no GPU #####
   carla_server_nogpu:
@@ -102,5 +82,5 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ~/.Xauthority:/home/$USER/.Xauthority:rw
       - /dev/dri:/dev/dri
-    command: /bin/bash CarlaUE4.sh -quality-level=Low
+    command: /bin/bash CarlaUE4.sh -quality-level=Low --ros2
     
