@@ -55,7 +55,7 @@ Supported ROS Version: `ROS2 Humble`
 
     You should see the CARLA server window open again.
 
-    >[!NOTE]
+    > [!NOTE]
     > Closing the CARLA server window will stop the server and container. You will need to start the server container again using `docker start carla_server`
 
 ## First Time ROS Environment Setup
